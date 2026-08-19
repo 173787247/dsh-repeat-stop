@@ -1,0 +1,10 @@
+- insert:
+    - id: dsh-repeat-stop
+      name: dsh-repeat-stop
+      config:
+        enabled: true
+        threshold: 6
+        exclude:
+          - job_output
+          - job_list
+          - job_kill

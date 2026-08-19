@@ -1,0 +1,24 @@
+{
+  "name": "dsh-repeat-stop",
+  "version": "0.1.0",
+  "description": "Hard-stop consecutive identical DeepSeek Harness tool calls after a configurable streak.",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "loop"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
