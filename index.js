@@ -1,3 +1,11 @@
+import {
+  callKey,
+  nextChain,
+  readThreshold,
+  toPatterns,
+  tracked,
+} from "./lib/repeat.js";
+
 export const name = "dsh-repeat-stop";
 export const inject = ["tools"];
 
@@ -16,23 +24,14 @@ export function apply(ctx, config = {}) {
 
   console.log(`[dsh-repeat-stop] loaded threshold=${threshold}`);
 
-  function tracked(toolName) {
-    if (includePatterns.length > 0 && !includePatterns.some((re) => re.test(toolName))) {
-      return false;
-    }
-    return !excludePatterns.some((re) => re.test(toolName));
-  }
-
   function observe(exec) {
-    if (!exec.agent || !tracked(exec.name)) return undefined;
+    if (!exec.agent || !tracked(exec.name, includePatterns, excludePatterns)) return undefined;
     if (counted.has(exec)) return chains.get(exec.agent);
     counted.add(exec);
     const key = callKey(exec);
-    const chain = chains.get(exec.agent);
-    const count = chain !== undefined && chain.key === key ? chain.count + 1 : 1;
-    const nextChain = { key, count };
-    chains.set(exec.agent, nextChain);
-    return nextChain;
+    const next = nextChain(chains.get(exec.agent), key);
+    chains.set(exec.agent, next);
+    return next;
   }
 
   ctx.tools.guard((exec) => {
@@ -56,42 +55,4 @@ export function apply(ctx, config = {}) {
     }
     return next();
   });
-}
-
-function readThreshold(value) {
-  const n = Number(value);
-  if (!Number.isInteger(n) || n < 2) {
-    throw new Error("dsh-repeat-stop: threshold must be an integer >= 2");
-  }
-  return n;
-}
-
-function toPatterns(list) {
-  if (!Array.isArray(list)) return [];
-  return list.map((pattern) => wildcardToRegExp(String(pattern)));
-}
-
-function wildcardToRegExp(pattern) {
-  const escaped = pattern.replace(/[|\\{}()[\]^$+?.]/g, "\\$&");
-  return new RegExp(`^${escaped.replaceAll("*", ".*")}$`);
-}
-
-function callKey(exec) {
-  return JSON.stringify([exec.name, canonicalize(exec.arguments)]);
-}
-
-function canonicalize(argumentsValue) {
-  return JSON.stringify(sortJsonValue(argumentsValue));
-}
-
-function sortJsonValue(value) {
-  if (Array.isArray(value)) return value.map(sortJsonValue);
-  if (value !== null && typeof value === "object") {
-    const sorted = {};
-    for (const key of Object.keys(value).sort()) {
-      sorted[key] = sortJsonValue(value[key]);
-    }
-    return sorted;
-  }
-  return value;
 }
