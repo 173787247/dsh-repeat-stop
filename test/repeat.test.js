@@ -68,6 +68,13 @@ describe("callKey", () => {
     assert.equal(a, b);
     assert.notEqual(a, c);
   });
+
+  it("treats missing arguments as an empty object", () => {
+    assert.equal(
+      callKey({ name: "net_doctor" }),
+      callKey({ name: "net_doctor", arguments: {} }),
+    );
+  });
 });
 
 describe("nextChain", () => {
