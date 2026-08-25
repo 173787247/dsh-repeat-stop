@@ -41,8 +41,19 @@ Override the whole row in the profile `cordis.patch.yml`:
 | Key | Default | Meaning |
 |---|---|---|
 | `enabled` | `true` | Set `false` to disable. |
-| `threshold` | `6` | How many identical calls may run; the next one is blocked. Integer >= 2. |
+| `threshold` | `6` | How many identical calls may run; the next one is blocked. Integer >= 2; invalid values fall back to 6. |
 | `exclude` | `job_output`, `job_list`, `job_kill` | Tool-name wildcards that never count or block. |
 | `include` | (empty) | If set, only these names are tracked. |
 
-A real user message resets the streak (same as the official reminder). Denied repeats still count, so hammering the same call stays blocked until the arguments change or the user speaks.
+A real user message resets the streak (same as the official reminder). Denied repeats still count, so hammering the same call stays blocked until the arguments change or the user speaks. Missing tool arguments count as `{}`.
+
+## Test
+
+```sh
+npm test
+```
+
+## Changelog
+
+- **0.1.1** — unit tests; invalid threshold no longer crashes load; missing arguments match `{}`.
+- **0.1.0** — first release: deny after a streak of identical tool calls.
