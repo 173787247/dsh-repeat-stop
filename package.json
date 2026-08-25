@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Hard-stop consecutive identical DeepSeek Harness tool calls after a configurable streak.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/173787247/dsh-repeat-stop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/173787247/dsh-repeat-stop/issues"
+  },
+  "homepage": "https://github.com/173787247/dsh-repeat-stop#readme",
   "type": "module",
   "main": "index.js",
   "files": [
