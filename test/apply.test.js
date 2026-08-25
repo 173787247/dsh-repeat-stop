@@ -53,4 +53,10 @@ describe("apply", () => {
     apply(ctx, { enabled: false, threshold: 6 });
     assert.equal(ctx.guards.length, 0);
   });
+
+  it("loads with the default threshold when config omits it", () => {
+    const ctx = mockCtx();
+    apply(ctx, { exclude: [] });
+    assert.equal(ctx.guards.length, 1);
+  });
 });

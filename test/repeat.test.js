@@ -16,9 +16,10 @@ describe("readThreshold", () => {
     assert.equal(readThreshold("8"), 8);
   });
 
-  it("rejects values below 2", () => {
-    assert.throws(() => readThreshold(1), /threshold/);
-    assert.throws(() => readThreshold(1.5), /threshold/);
+  it("falls back to 6 when the value is missing or invalid", () => {
+    assert.equal(readThreshold(undefined), 6);
+    assert.equal(readThreshold(1), 6);
+    assert.equal(readThreshold(1.5), 6);
   });
 });
 
