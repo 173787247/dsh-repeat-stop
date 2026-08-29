@@ -1,30 +1,30 @@
 # dsh-repeat-stop
 
-DeepSeek Harness plugin: **hard-stop** consecutive identical tool calls.
+DeepSeek Harness plugin: **hard-stop** consecutive identical tool calls (same tool + same arguments).
 
-Official `repeat-tool-reminder` only advises (default at 3 / 5 / 8) and never blocks. After a streak of the same tool with the same arguments, this plugin **denies the next call** so the agent cannot spin in place.
+Pairs with [dsh-tool-budget](https://github.com/173787247/dsh-tool-budget). Part of **[dsh-wsl-kit](https://github.com/173787247/dsh-wsl-kit)**.
 
-默认：连续 **6** 次相同调用可以执行，**第 7 次**被拦。换参数、换工具、或用户再发一条消息都会清零计数。
+[中文说明 ↓](#中文)
 
-## Install
+---
+
+## English
+
+### Why
+
+Official `repeat-tool-reminder` only advises and never blocks. Agents can still spin on the same failing call. This plugin **denies** the next call after a streak.
+
+Default: **6** identical calls may run; the **7th** is blocked. Changing args/tool or a real user message resets the streak.
+
+### Install
 
 ```sh
 dsh plugin --profile web add github:173787247/dsh-repeat-stop
-# or a local checkout:
-dsh plugin --profile web add /absolute/path/to/dsh-repeat-stop
 ```
 
-Restart `dsh web`. No new tool appears. When it fires, Trajectory shows a tool error starting with `dsh-repeat-stop: blocked`.
+Restart `dsh web`. No new tool appears. When it fires, Trajectory shows `dsh-repeat-stop: blocked`.
 
-Counting happens in the synchronous tool guard, so a single turn that fires the same concurrent-safe call many times (for example `net_doctor`) is still capped.
-
-## Topics
-
-On GitHub, add `dsh-plugin`.
-
-## Config
-
-Override the whole row in the profile `cordis.patch.yml`:
+### Config
 
 ```yaml
 - id: dsh-repeat-stop
@@ -36,24 +36,51 @@ Override the whole row in the profile `cordis.patch.yml`:
       - job_output
       - job_list
       - job_kill
+    # include: []   # if set, only these names (wildcards ok) are tracked
 ```
 
 | Key | Default | Meaning |
-|---|---|---|
-| `enabled` | `true` | Set `false` to disable. |
-| `threshold` | `6` | How many identical calls may run; the next one is blocked. Integer >= 2; invalid values fall back to 6. |
-| `exclude` | `job_output`, `job_list`, `job_kill` | Tool-name wildcards that never count or block. |
-| `include` | (empty) | If set, only these names are tracked. |
+|-----|---------|---------|
+| `enabled` | `true` | Master switch |
+| `threshold` | `6` | Allowed streak; next call blocked (integer ≥ 2) |
+| `exclude` | job_* | Names that never count |
+| `include` | (empty) | If set, only these names are tracked |
 
-A real user message resets the streak (same as the official reminder). Denied repeats still count, so hammering the same call stays blocked until the arguments change or the user speaks. Missing tool arguments count as `{}`.
-
-## Test
+### Test
 
 ```sh
 npm test
 ```
 
-## Changelog
+### License
 
-- **0.1.1** — unit tests; invalid threshold no longer crashes load; missing arguments match `{}`.
-- **0.1.0** — first release: deny after a streak of identical tool calls.
+MIT
+
+---
+
+## 中文
+
+### 为什么需要
+
+官方重复提醒只劝不停。本插件在「同一工具 + 同一参数」连续达到阈值后**硬拦截**，避免 Agent 原地空转。
+
+默认连续 6 次可执行，第 7 次拒绝。换参数、换工具或用户再发消息会清零。
+
+### 安装
+
+```sh
+dsh plugin --profile web add github:173787247/dsh-repeat-stop
+```
+
+触发时 Trajectory 出现 `dsh-repeat-stop: blocked`。
+
+### 与 tool-budget 的区别
+
+| 插件 | 拦截对象 |
+|------|----------|
+| `dsh-repeat-stop` | 连续相同调用 |
+| `dsh-tool-budget` | 整场会话工具总次数 |
+
+### 许可
+
+MIT
