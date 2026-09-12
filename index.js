@@ -7,7 +7,7 @@ import {
 } from "./lib/repeat.js";
 
 export const name = "dsh-repeat-stop";
-export const inject = ["tools"];
+export const inject = ["tools", "systemPrompt"];
 
 export function apply(ctx, config = {}) {
   const enabled = config.enabled !== false;
@@ -23,6 +23,12 @@ export function apply(ctx, config = {}) {
   }
 
   console.log(`[dsh-repeat-stop] loaded threshold=${threshold}`);
+
+  ctx.systemPrompt?.section?.({
+    name: "plugin:dsh-repeat-stop",
+    order: 40,
+    text: `Identical tool calls are hard-stopped after ${threshold} repeats (dsh-repeat-stop). Agent Teams: each teammate agent has its own streak counter — still avoid hammering the same tool. Prefer finishing or changing args over looping.`,
+  });
 
   function observe(exec) {
     if (!exec.agent || !tracked(exec.name, includePatterns, excludePatterns)) return undefined;
@@ -40,6 +46,7 @@ export function apply(ctx, config = {}) {
     return [
       `dsh-repeat-stop: blocked ${exec.name} after ${threshold} consecutive identical calls.`,
       "Change the arguments, use a different tool, or finish the task.",
+      "In Agent Teams sessions, stop spawning loops — ask the lead to conclude.",
       `count=${chain.count} threshold=${threshold}`,
     ].join(" ");
   });
