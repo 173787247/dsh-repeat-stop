@@ -6,12 +6,24 @@ DeepSeek Harness 插件：**硬拦截**连续相同的工具调用（同一工�
 
 [English → README.md](./README.md)
 
+## 在套件里的位置
+
+连续相同的工具调用达到阈值就硬停。不限制花样不同的调用，那是 dsh-tool-budget。
+
+```mermaid
+flowchart LR
+  calls["连续相同的工具调用"] --> guard["dsh-repeat-stop"] --> stop["硬停"]
+```
+
+整套关系图和版本快照：[dsh-wsl-kit 中文说明](https://github.com/173787247/dsh-wsl-kit/blob/master/README.zh.md)。本插件是 **0.1.2**（daily）。不要把那份总表抄进本 README。
+
+
 ---
 ## 兼容性
 
 | 项 | 值 |
 |----|----|
-| **插件** | `dsh-repeat-stop` **0.1.1** |
+| **插件** | `dsh-repeat-stop` **0.1.2** |
 | **最低 dsh** | ≥ **0.1.2**（Windows 中继 `:3081` 一次性 `?token=`） |
 | **最新验证** | 以 [dsh-wsl-kit 兼容性](https://github.com/173787247/dsh-wsl-kit#compatibility-2026-09) 为准（当前 **`0.1.5-rc.1`**）— 套件唯一真源 |
 | **套件档位** | `daily`（亦含于 `github` / `full`；fetch+net 亦在 `llm`） |
